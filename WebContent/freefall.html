@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html" charset="utf-8"/>
+<title>Insert title here</title>
+<script type="text/javascript" src="jquery.min.js"></script>
+<style type="text/css">
+
+  #ball{
+    width: 100px;
+    height: 100px;
+    background-color: black;
+    border-radius: 50%;
+
+  }
+    .container{
+      height: 900px;
+      width:100px;
+      background-color: antiquewhite;
+  }
+
+</style>
+</head>
+<body>
+<div class="container">
+ <div id="ball" style="position: absolute;top:0px;left:0px"></div> 
+ </div> 
+
+<script type="text/javascript">
+    var dball = document.getElementById("ball");  //指定 #ball 的对象的引用
+    var height = $(".container").height();         //获取容器的的高度， 
+    var postionY =parseInt(dball.style.top);       //获取小球的上端坐标，定义为纵轴的位置
+    var bool=true;                                //由于判断小球的运动方向，规定向下为true，向上为false
+    var t00= 0,t01= 0;                            //小球下落阶段，t00和t01为两个相邻最小时间段，t00在前，t01在后
+    var t10= 0,t11=0;                            //小球上升阶段，t10和t11为两个相邻最小时间段，t10在前，t11在后
+    var timeUnit=0.1;                             //最小时间间隔
+    var speedy= 0;                                //小球下落阶段的timeUnit时间内的位移增量，可认为下落瞬时速度
+    var speedy1=0;                                 //小球上升阶段的timeUnit时间内的位移增量，上升瞬时速度
+    var speedmax=0;                                //小球下落阶段的最大速度，与地面的碰撞时的速度
+    var a=1.2;                                     //速度损失比例，即碰撞动量损失
+    var g=9.8;                                    //重力加速度
+
+       function dropdown()
+       {
+         if(bool){         
+         t01=t00+timeUnit;                   //t01，相对于t00为下一时刻
+         speedy =1/2*g*(t01*t01-t00*t00);       //t01与t00间的位移增量
+         t00=t01;                            //                        
+             postionY=parseInt(dball.style.top); 
+             dball.style.top=postionY+speedy+"px";    //下落阶段的位移量累加，
+             
+          if(postionY+100>=height){
+            speedmax=speedy;  
+            t00=0;t01=0; 
+            bool=false;   
+              
+                                }   
+       }
+        else if(speedmax>1.5){    
+             t11=t10+timeUnit;  
+             speedy1 =1/2*g*(t11*t11-t10*t10);    
+             t10=t11;
+             postionY=parseInt(dball.style.top);
+             dball.style.top=postionY-(speedmax/a)+speedy1+"px";  //上阶段的位移量累加，
+             
+            	     
+             if(speedy1-(speedmax/a)>=0){    
+                t10=0;t11=0;               
+                bool=true;
+                a=a+0.1;//因为每撞击一次，小球第二次的下落速度会变小，因为速度越小，撞击时能量损耗越大，所以能量损耗比例越高
+               }                      
+         }
+        else
+        	clearInterval(doydropdown);      
+         
+       }
+         var doydropdown =setInterval(dropdown,10);                  
+   
+         
+         
+</script>
+</body>
+</html>
